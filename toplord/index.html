@@ -5963,20 +5963,20 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
 (function (TL) {
   'use strict';
   TL.style(`
-/* 3D 風素材があるとき（TL.townArt）: 建物は正方形の区画タイル、地区は背景画像 */
-.bs-board.has-art { background-size: cover; background-position: center center; }
-.bs-tile.has-art .bs-shape { width: 78px; height: 78px; margin-top: 4px; border-radius: 10px; background-size: cover; background-position: center; box-shadow: 0 3px 6px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.25); }
+/* 3D 風素材があるとき（TL.townArt）: 建物の区画画像は縁をぼかして地形に溶け込ませる */
+.bs-tile.has-art .bs-shape { width: 112px; height: 112px; margin-top: 0; border-radius: 0; background-size: cover; background-position: center; box-shadow: none;
+  -webkit-mask-image: radial-gradient(circle at 50% 52%, #000 46%, rgba(0,0,0,.8) 58%, transparent 70%); mask-image: radial-gradient(circle at 50% 52%, #000 46%, rgba(0,0,0,.8) 58%, transparent 70%); }
 .bs-tile.has-art .bs-shape::before { display: none; }
 .bs-tile.has-art .bs-shape > .icon { display: none; }
-.bs-tile.big.has-art .bs-shape { width: 124px; height: 124px; margin-top: 6px; border-radius: 14px; }
-.bs-tile.has-art .bs-build { top: 36px; }
-.bs-tile.big.has-art .bs-build { top: 60px; }
-.bs-tile.has-art .bs-name { margin-top: 3px; }
-.bs-tile.empty.has-art .bs-shape { border: 2px dashed rgba(255,255,255,.85); background-color: transparent; filter: saturate(.8); }
+.bs-tile.big.has-art .bs-shape { width: 180px; height: 180px; margin-top: 0; }
+.bs-tile.has-art .bs-build { top: 50px; }
+.bs-tile.big.has-art .bs-build { top: 86px; }
+.bs-tile.has-art .bs-name { margin-top: -12px; }
+.bs-tile.big.has-art .bs-name { margin-top: -18px; }
+.bs-tile.empty.has-art .bs-shape { border: 0; background-color: transparent; filter: saturate(.75) brightness(.95); opacity: .88; width: 100px; height: 100px; margin-top: 6px; }
+.bs-name { position: relative; z-index: 1; }
 .bs-tile.empty.has-art .bs-shape > .icon { display: inline-block; filter: drop-shadow(0 1px 2px rgba(0,0,0,.8)); }
-.bs-tile.empty.locked.has-art .bs-shape { filter: grayscale(.6) brightness(.8); border-style: solid; }
-.bs-world { font-family: var(--font-body); font-size: 11px; color: var(--panel-muted); margin-left: 6px; }
-
+.bs-tile.empty.locked.has-art .bs-shape { filter: grayscale(.7) brightness(.8); opacity: .75; }
 :root { --bs-grass: #7cb663; --bs-grass-2: #66a150; --bs-path: #dcc08a; --bs-path-2: #cbad70; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bs-grass: #3e6b3a; --bs-grass-2: #345b31; --bs-path: #8c784c; --bs-path-2: #76663f; } }
 :root[data-theme="dark"] { --bs-grass: #3e6b3a; --bs-grass-2: #345b31; --bs-path: #8c784c; --bs-path-2: #76663f; }
@@ -6073,46 +6073,58 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
 .bs-unlock-list .icon { color: var(--ok); }
 .bs-workers { margin-top: 8px; }
 
-/* ---- 城下町 = 一枚の広い地図（スワイプ/ドラッグで見渡す・ピンチの代わりに「全体」ボタン） ---- */
+/* ---- 城下町 = 一枚の地形（指で移動・ピンチ拡大・慣性、PC はドラッグ/ホイール）。地区は枠ではなく土地の区域 ---- */
 .bs-home { position: relative; flex: 1; min-height: 0; display: block; overflow: hidden; background: var(--bs-grass-2); }
-.bs-view { position: absolute; inset: 0; overflow: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; cursor: grab; overscroll-behavior: contain; }
-.bs-view::-webkit-scrollbar { display: none; }
+.bs-view { position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
 .bs-view.dragging { cursor: grabbing; }
-.bs-view.dragging .bs-tile { pointer-events: none; }
-.bs-view.overview .bs-tile { pointer-events: none; }
-.bs-view.overview .bs-district { cursor: zoom-in; }
-.bs-view.overview { display: flex; align-items: center; justify-content: center; }
-.bs-home.overview .bs-top, .bs-home.overview .bs-hint { display: none; }
-.bs-size { position: relative; }
-.bs-map { position: absolute; left: 0; top: 0; transform-origin: 0 0; background-color: var(--bs-grass); background-size: 700px 700px; background-position: center; }
-.bs-map::before { content: ''; position: absolute; inset: 0; background: rgba(255,250,235,.12); pointer-events: none; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bs-map::before { background: rgba(0,0,0,.32); } }
-:root[data-theme="dark"] .bs-map::before { background: rgba(0,0,0,.32); }
-.bs-road { position: absolute; background: linear-gradient(180deg, var(--bs-path-2), var(--bs-path) 50%, var(--bs-path-2)); border-radius: 22px; box-shadow: inset 0 0 0 3px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.18); opacity: .92; }
-.bs-road.v { background: linear-gradient(90deg, var(--bs-path-2), var(--bs-path) 50%, var(--bs-path-2)); }
-.bs-district { position: absolute; }
-.bs-dhead { height: 26px; box-sizing: border-box; }
-.bs-district > .bs-board { position: absolute; left: 0; right: 0; top: 26px; bottom: 0; }
-.bs-district > .bs-board.locked { height: auto; }
-.bs-top { position: absolute; left: 8px; right: 8px; top: 8px; z-index: 3; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+.bs-view.dragging .bs-tile, .bs-view.overview .bs-tile { pointer-events: none; }
+.bs-view.overview { cursor: zoom-in; }
+.bs-map { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform;
+  background: radial-gradient(circle at 18% 28%, rgba(255,255,255,.07), transparent 28%), radial-gradient(circle at 78% 72%, rgba(0,0,0,.06), transparent 30%), repeating-linear-gradient(135deg, var(--bs-grass) 0 28px, var(--bs-grass-2) 28px 56px); }
+.bs-zone { position: absolute; background-size: cover; background-position: center; pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 42%, rgba(0,0,0,.75) 60%, transparent 76%); mask-image: radial-gradient(ellipse at center, #000 42%, rgba(0,0,0,.75) 60%, transparent 76%); }
+.bs-zone.locked { filter: grayscale(.75) brightness(.7); }
+.bs-roads { position: absolute; left: 0; top: 0; pointer-events: none; }
+.bs-tree { position: absolute; width: 86px; height: 86px; background-size: cover; background-position: center; pointer-events: none; opacity: .95;
+  -webkit-mask-image: radial-gradient(circle, #000 40%, transparent 52%); mask-image: radial-gradient(circle, #000 40%, transparent 52%); }
+.bs-ztag { position: absolute; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 4px; padding: 3px 12px; border-radius: 999px; background: rgba(20,30,52,.78); color: var(--gold-2); font-family: var(--font-display); font-size: 15px; letter-spacing: .08em; border: 1px solid rgba(240,215,138,.55); box-shadow: 0 2px 6px rgba(0,0,0,.4); pointer-events: none; white-space: nowrap; }
+.bs-ztag .icon { width: 15px; height: 15px; }
+.bs-zlock { position: absolute; transform: translate(-50%, -50%); width: 230px; text-align: center; padding: 10px 12px; border-radius: 14px; background: rgba(20,30,52,.82); color: #fff; border: 1px solid var(--gold); box-shadow: var(--shadow-lg); }
+.bs-zlock .icon-lg { color: var(--gold-2); }
+.bs-zlock b { display: block; font-family: var(--font-display); font-size: 16px; color: var(--gold-2); }
+.bs-zlock .tiny { color: #d8dce6; margin: 2px 0 6px; }
+.bs-tile { width: 120px; height: 128px; }
+.bs-tile.big { width: 190px; height: 200px; }
+/* 上の案内は最小限: 左にクエスト1行＋進行中チップ、右に催し物の小アイコン列 */
+.bs-top { position: absolute; left: 6px; right: 6px; top: 6px; z-index: 3; display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; pointer-events: none; }
 .bs-top > * { pointer-events: auto; }
-.bs-top-row { display: flex; gap: 8px; align-items: stretch; }
-.bs-dnav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding: 1px 0 2px; }
-.bs-dnav::-webkit-scrollbar { display: none; }
-.bs-dnav button { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 3px; border-radius: 999px; border: 1px solid var(--gold); background: var(--panel); color: var(--panel-fg); font: inherit; font-size: 11px; font-weight: 700; padding: 3px 9px; white-space: nowrap; box-shadow: var(--shadow); cursor: pointer; }
-.bs-dnav button .icon { width: 12px; height: 12px; color: var(--gold-2); }
-.bs-dnav button.locked { opacity: .62; }
-.bs-dnav button.on { background: var(--gold); color: #3a2a08; }
-.bs-dnav button.on .icon { color: #3a2a08; }
-.bs-zoom { position: absolute; right: 8px; bottom: 96px; z-index: 3; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--gold); background: var(--panel); color: var(--gold-2); display: grid; place-items: center; box-shadow: var(--shadow-lg); cursor: pointer; font: inherit; font-size: 10px; font-weight: 700; line-height: 1; padding: 0; }
-.bs-zoom .icon { width: 18px; height: 18px; }
+.bs-tl { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; flex: 1; }
+.bs-quest { position: relative; display: flex; align-items: center; gap: 6px; max-width: 100%; padding: 5px 10px 7px; border-radius: 10px; border: 1px solid var(--gold); background: linear-gradient(180deg, var(--panel), var(--panel-2)); color: var(--panel-fg); font: inherit; font-size: 12px; cursor: pointer; box-shadow: var(--shadow); text-align: left; overflow: hidden; }
+.bs-quest .bs-qk { flex: 0 0 auto; font-size: 9px; color: var(--gold-2); border: 1px solid var(--gold); border-radius: 999px; padding: 0 5px; line-height: 14px; }
+.bs-quest .bs-qname { font-weight: 700; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.bs-quest .num { flex: 0 0 auto; color: var(--panel-muted); }
+.bs-quest .bs-qgo { flex: 0 0 auto; background: var(--gold); color: #3a2a08; border-radius: 999px; padding: 1px 8px; font-size: 11px; font-weight: 700; }
+.bs-quest .bs-qgo.ok { background: var(--ok-2); color: #fff; }
+.bs-quest .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 0; background: rgba(0,0,0,.35); }
+.bs-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: rgba(20,30,52,.82); color: #fff; font-size: 11px; font-weight: 700; border: 1px solid rgba(240,215,138,.5); box-shadow: var(--shadow); white-space: nowrap; max-width: 100%; }
+.bs-chip .icon { width: 13px; height: 13px; color: var(--gold-2); }
+button.bs-chip { font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.bs-chip.ok { background: var(--ok); border-color: #fff; }
+.bs-chip .timer { font-variant-numeric: tabular-nums; }
+.bs-events { width: 50px; gap: 3px; }
+.bs-ev { padding: 3px 1px 2px; font-size: 8px; border-radius: 9px; }
+.bs-ev .icon { width: 18px; height: 18px; }
+.bs-ev .bs-ev-t { font-size: 8px; min-height: 9px; }
+.bs-ev .bs-ev-s { font-size: 7px; }
+.bs-zoom { position: absolute; right: 8px; bottom: 96px; z-index: 3; width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--gold); background: var(--panel); color: var(--gold-2); display: grid; place-items: center; box-shadow: var(--shadow-lg); cursor: pointer; font: inherit; font-size: 9px; font-weight: 700; line-height: 1; padding: 0; }
+.bs-zoom .icon { width: 17px; height: 17px; }
 .bs-hint { position: absolute; left: 50%; bottom: 100px; transform: translateX(-50%); z-index: 3; font-size: 11px; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); border-radius: 999px; padding: 4px 12px; pointer-events: none; white-space: nowrap; animation: bs-hint 6s ease forwards; }
 @keyframes bs-hint { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
 .bs-bottom { position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 4; margin: 0; }
 `);
 
   const base = TL.base = {};
-  const PITCH = 104, TILE_W = 84, BIG_W = 128, BUBBLE_MIN = 10;
+  const BUBBLE_MIN = 10;
   const RES_NAME = { wood: '木材', food: '食料', gold: '金貨' };
   const COLORS = { castle: '#6f7496', farm: '#c38c2d', sawmill: '#8d5b2c', house: '#b8573a', drill_ground: '#7d6b48', builders_hut: '#9e6c3b', ward_tent: '#4e8f90', barracks: '#a4493a', tribe_forge: '#8e3f70', scholar_tower: '#4e6bc0', alliance_keep: '#3f8f60', warehouse: '#8f7a4f', wall: '#7e8691', watchtower: '#6b7f9f', griffin_nest: '#b07a2a', spring: '#3ba1cb' };
   const ENTER = { barracks: 'barracks', ward_tent: 'hospital', scholar_tower: 'research', griffin_nest: 'griffin', alliance_keep: 'alliance' };
@@ -6124,13 +6136,6 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     3: { rows: 1, tiles: { farm: { c: 0, r: 0 }, sawmill: { c: 1, r: 0 }, house: { c: 2, r: 0 }, griffin_nest: { c: 3, r: 0 } } },
     4: { rows: 2, tiles: { farm: { c: 0, r: 0 }, sawmill: { c: 1, r: 0 }, house: { c: 2, r: 0 }, barracks: { c: 3, r: 0 }, ward_tent: { c: 1.5, r: 1 } } },
   };
-  // 城下町の地図（px）: 中央に第1地区（王冠の国）、上に第4地区（星降る高地）、左右に第2（精霊の森）・第3（組合の街）。道で結ぶ
-  const MAP = { w: 1420, h: 980,
-    regions: { 1: { l: 500, t: 380, w: 420, h: 566 }, 2: { l: 10, t: 330, w: 420, h: 300 }, 3: { l: 990, t: 330, w: 420, h: 300 }, 4: { l: 500, t: 20, w: 420, h: 300 } },
-    roads: [{ l: 430, t: 592, w: 560, h: 44 }, { l: 690, t: 318, w: 40, h: 64, v: true }] };
-  const DISTRICT_ICON = { 1: 'castle', 2: 'bow', 3: 'ship', 4: 'star' };
-  // 表示状態（再描画をまたいで保つ）: z = 倍率（1 または全体表示）、x/y = スクロール位置、hinted = 操作ヒント表示済み
-  const view = { z: 1, x: null, y: null, hinted: false };
   const CASTLE_FEATURES = ['drill_ground', 'ward_tent', 'barracks', 'research', 'alliance', 'world', 'arena', 'glory', 'griffin', 'squad2', 'squad3'];
   const EVENTS = [
     { key: 'growth7', name: '躍進の道', icon: 'star', screen: 'growth7' },
@@ -6526,7 +6531,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     if (ds.length) toast(nameOf(id) + ' は第' + ds[0].n + '地区の解放が必要です（' + condText(ds[0]) + '）', 'warn'); else toast(nameOf(id) + ' は建設できません', 'warn');
     return false;
   };
-  function flashTile(uid) { if (typeof document === 'undefined') return; const el = document.querySelector('[data-building-uid="' + uid + '"]'); if (!el) return; el.classList.add('flash'); try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { /* ignore */ } setTimeout(function () { el.classList.remove('flash'); }, 3000); }
+  function flashTile(uid) { if (typeof document === 'undefined') return; const el = document.querySelector('[data-building-uid="' + uid + '"]'); if (!el) return; el.classList.add('flash'); try { if (!base.revealEl(el)) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { /* ignore */ } setTimeout(function () { el.classList.remove('flash'); }, 3000); }
 
   /* ---------- resource info popup (HUD chips) ---------- */
   function bonusBreakdown(key) {
@@ -6720,10 +6725,10 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
   }
   function questHtml() {
     const q = currentQuest();
-    if (!q) return '<div class="panel bs-quest" data-panel="quest"><div class="tiny muted">メインクエスト</div><div class="row"><b class="bs-qname">すべて達成しました</b><button class="btn btn-sm btn-ghost" data-act="quest-go">一覧</button></div></div>';
+    if (!q) return '<button class="bs-quest" data-panel="quest"><span class="bs-qk">クエスト</span><b class="bs-qname">すべて達成</b><span class="bs-qgo" data-act="quest-go">一覧</span></button>';
     const goal = Math.max(1, q.goal || 1); const prog = Math.min(goal, q.progress || 0); const claimable = prog >= goal && !!(TL.missions && TL.missions.claimQuest);
-    return '<div class="panel bs-quest" data-panel="quest"><div class="tiny muted">メインクエスト</div><div class="row"><b class="bs-qname">' + esc(q.name) + '</b><span class="num tiny">' + fmt.num(prog) + '/' + fmt.num(goal) + '</span></div>' +
-      '<div class="row" style="margin-top:4px"><div class="bar gold"><i style="width:' + Math.round(100 * prog / goal) + '%"></i></div><button class="btn btn-sm ' + (claimable ? 'btn-ok' : 'btn-gold') + '" data-act="quest-go">' + (claimable ? '受取' : '移動') + '</button></div></div>';
+    return '<button class="bs-quest" data-panel="quest" aria-label="メインクエスト"><span class="bs-qk">クエスト</span><b class="bs-qname">' + esc(q.name) + '</b><span class="num tiny">' + fmt.num(prog) + '/' + fmt.num(goal) + '</span>' +
+      '<span class="bs-qgo' + (claimable ? ' ok' : '') + '" data-act="quest-go">' + (claimable ? '受取' : '移動') + '</span><span class="bar"><i style="width:' + Math.round(100 * prog / goal) + '%"></i></span></button>';
   }
   function questGo() {
     const q = currentQuest();
@@ -6772,29 +6777,55 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     return h;
   }
   function uncollectedHtml(un) { return ['wood', 'food', 'gold'].map(function (r) { return '<span class="inline">' + TL.icon(r) + fmt.num(un[r]) + '</span>'; }).join(''); }
+  function chipsHtml() {
+    const s = S(); let h = '';
+    s.buildQueue.forEach(function (it) { const b = byUid(it.uid); h += '<span class="bs-chip">' + TL.icon('build') + esc(b ? nameOf(b.id) : it.uid) + '→Lv' + it.toLevel + ' <b class="timer num" data-timer-uid="' + esc(it.uid) + '">' + fmt.time((it.endAt - now()) / 1000) + '</b></span>'; });
+    const un = uncollected(); if (un.wood + un.food + un.gold >= BUBBLE_MIN) h += '<button class="bs-chip ok" data-act="collect-all">' + TL.icon('chest') + '全て回収 <span class="inline gap num" data-uncollected>' + uncollectedHtml(un) + '</span></button>';
+    return h;
+  }
   function topHtml() {
-    let h = '<div class="bs-top"><div class="bs-top-row"><div class="bs-left">' + questHtml();
+    let h = '<div class="bs-top"><div class="bs-tl">' + questHtml();
     const markers = intelMarkers();
     if (markers.length) h += '<div class="bs-intel">' + markers.map(function (m) { return '<button class="bs-intel-m" data-intel="' + esc(m.id) + '"><i>!</i>' + esc(m.label || m.kind || '諜報') + '</button>'; }).join('') + '</div>';
-    h += statusHtml() + dnavHtml() + '</div><div class="bs-events">' + EVENTS.map(evHtml).join('') + '</div></div></div>';
+    h += chipsHtml() + '</div><div class="bs-events">' + EVENTS.map(evHtml).join('') + '</div></div>';
     return h;
   }
 
   /* ---------- home screen: town map ---------- */
-  // 3D 風素材（assets/town、build が TL.townArt に埋め込む）: 建物は「id@world」→「id」の順に探す。無ければ従来の色＋アイコン
+  // 城下町 = 一枚の地形。地区は枠ではなく「土地の区域」（縁をぼかした背景＋名札）、建物は地図 px 座標に自然に配置。
+  // 操作: 指で移動・2本指で拡大縮小・離すと慣性、PC はドラッグ/ホイール、右下「全体」で全景。位置と倍率は view に保持し再描画をまたぐ
   function townArt(id, world) {
     const A = TL.townArt && TL.townArt.buildings; if (!A) return null;
     return (world && A[id + '@' + world]) || A[id] || null;
   }
   function districtArt(n) { const A = TL.townArt && TL.townArt.districts; return A ? (A[String(n)] || null) : null; }
-  let curOy = 0;   // 区画の縦の余白（地区の枠に対してタイル列を上下中央に置く）
-  function posStyle(pos, big) { return 'left:calc(' + ((2 * pos.c + 1) * 12.5) + '% - ' + ((big ? BIG_W : TILE_W) / 2) + 'px);top:' + (10 + curOy + pos.r * PITCH) + 'px;'; }
+  const MAP = { w: 1400, h: 1140 };
+  const ZONES = {
+    1: { x: 700, y: 700, w: 760, h: 800, tag: { x: 700, y: 335 } },
+    2: { x: 230, y: 640, w: 480, h: 480, tag: { x: 230, y: 455 } },
+    3: { x: 1170, y: 640, w: 480, h: 480, tag: { x: 1170, y: 455 } },
+    4: { x: 700, y: 185, w: 600, h: 400, tag: { x: 700, y: 30 } },
+  };
+  const SPOTS = {
+    1: { castle: [700, 560], farm: [530, 420], sawmill: [870, 420], house: [445, 585], drill_ground: [955, 585], builders_hut: [480, 745], ward_tent: [625, 765], barracks: [775, 765], alliance_keep: [920, 745], warehouse: [530, 895], watchtower: [660, 915], scholar_tower: [760, 915], tribe_forge: [890, 895], spring: [700, 1040] },
+    2: { farm: [150, 560], sawmill: [310, 560], house: [150, 720], wall: [310, 720] },
+    3: { farm: [1090, 560], sawmill: [1250, 560], house: [1090, 720], griffin_nest: [1250, 720] },
+    4: { farm: [560, 130], sawmill: [700, 110], house: [840, 130], barracks: [620, 262], ward_tent: [780, 262] },
+  };
+  const ROADS = ['M700 650 C 700 720 560 720 440 660', 'M700 650 C 700 720 840 720 960 660', 'M700 480 C 700 420 700 380 700 330', 'M700 650 C 700 760 700 900 700 1000'];
+  const TREES = [[60, 160], [170, 90], [1260, 120], [1340, 230], [90, 980], [200, 1060], [1240, 1000], [1330, 900], [360, 1080], [1050, 1090], [330, 300], [1070, 300]];
+  const ZONE_ICON = { 1: 'castle', 2: 'bow', 3: 'ship', 4: 'star' };
+  const TILE_W = 120, TILE_H = 128, BIG_TW = 190, BIG_TH = 200;
+  const view = { z: 1, x: 0, y: 0, init: false, hinted: false };
+  let vp = null, mapEl = null, animRaf = null;
+
+  function posStyle(x, y, big) { const w = big ? BIG_TW : TILE_W, h = big ? BIG_TH : TILE_H; return 'left:' + (x - w / 2) + 'px;top:' + (y - h / 2) + 'px;'; }
   function byIndex(a, b) { return (parseInt(a.uid.split('#')[1], 10) || 0) - (parseInt(b.uid.split('#')[1], 10) || 0); }
-  function tileHtml(b, def, pos, big, d) {
+  function tileHtml(b, def, x, y, big, d) {
     const q = queueOf(b.uid); const res = prodRes(b); const stored = Math.floor(b.stored || 0);
     const canUp = !q && base.canUpgrade(b.uid).ok;
     const art = townArt(b.id, d && d.world);
-    let h = '<div class="bs-tile' + (big ? ' big' : '') + (q ? ' building' : '') + (canUp ? ' can-up' : '') + (art ? ' has-art' : '') + '" role="button" tabindex="0" data-building-uid="' + esc(b.uid) + '" data-id="' + esc(b.id) + '" style="--c:' + (COLORS[b.id] || '#777') + ';' + posStyle(pos, big) + '" aria-label="' + esc(def.name) + '">';
+    let h = '<div class="bs-tile' + (big ? ' big' : '') + (q ? ' building' : '') + (canUp ? ' can-up' : '') + (art ? ' has-art' : '') + '" role="button" tabindex="0" data-building-uid="' + esc(b.uid) + '" data-id="' + esc(b.id) + '" style="--c:' + (COLORS[b.id] || '#777') + ';' + posStyle(x, y, big) + '" aria-label="' + esc(def.name) + '">';
     h += art ? '<div class="bs-shape bs-art" style="background-image:url(' + art + ')"></div>' : '<div class="bs-shape">' + TL.icon(def.icon || 'home', big ? 'icon-xl' : 'icon-lg') + '</div>';
     h += '<span class="bs-lv">' + (b.level > 0 ? 'Lv' + b.level : '新築') + '</span><span class="bs-up">' + TL.icon('arrowUp') + '</span>';
     if (q) h += '<div class="bs-build"><span class="timer" data-timer-uid="' + esc(b.uid) + '">' + fmt.time((q.endAt - now()) / 1000) + '</span><div class="bar"><i data-prog-uid="' + esc(b.uid) + '" style="width:' + clamp(100 * (now() - q.startAt) / Math.max(1, q.endAt - q.startAt), 0, 100) + '%"></i></div></div>';
@@ -6803,99 +6834,152 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     h += '<span class="bs-name">' + esc(def.name) + '</span></div>';
     return h;
   }
-  function slotHtml(id, def, pos, d) {
+  function slotHtml(id, def, x, y, d) {
     const unlock = def.unlock || 1; const locked = castleLevel() < unlock; const sr = slotReqOk(d, id);
     const plot = townArt('plot', d.world);
-    return '<div class="bs-tile empty' + (locked || !sr.ok ? ' locked' : '') + (plot ? ' has-art' : '') + '" role="button" tabindex="0" data-build-slot="' + esc(id) + '" data-district="' + d.n + '" data-id="' + esc(id) + '" style="--c:' + (COLORS[id] || '#777') + ';' + posStyle(pos) + '" aria-label="' + esc(def.name) + ' を建設">' +
+    return '<div class="bs-tile empty' + (locked || !sr.ok ? ' locked' : '') + (plot ? ' has-art' : '') + '" role="button" tabindex="0" data-build-slot="' + esc(id) + '" data-district="' + d.n + '" data-id="' + esc(id) + '" style="--c:' + (COLORS[id] || '#777') + ';' + posStyle(x, y, false) + '" aria-label="' + esc(def.name) + ' を建設">' +
       '<div class="bs-shape' + (plot ? ' bs-art' : '') + '"' + (plot ? ' style="background-image:url(' + plot + ')"' : '') + '>' + TL.icon(locked || !sr.ok ? 'lock' : (def.icon || 'home'), 'icon-lg') + '<span class="bs-sub">' + (locked ? '城塞Lv' + unlock : !sr.ok ? '要研究' : '建設') + '</span></div><span class="bs-name">' + esc(def.name) + '</span></div>';
   }
-  function districtHtml(d) {
-    const unlocked = base.districtUnlocked(d.n); const ready = base.districtReady(d.n); const name = d.name || ('第' + d.n + '地区');
-    const rg = MAP.regions[d.n] || { l: 10, t: 10 + (d.n - 1) * 320, w: 420, h: 300 };
-    let h = '<section class="bs-district' + (unlocked ? '' : ' is-locked') + '" data-district="' + d.n + '" style="left:' + rg.l + 'px;top:' + rg.t + 'px;width:' + rg.w + 'px;height:' + rg.h + 'px">';
+  function zoneHtml(d) {
+    const z = ZONES[d.n] || { x: 700, y: 700, w: 400, h: 400, tag: { x: 700, y: 500 } };
+    const unlocked = base.districtUnlocked(d.n); const bg = districtArt(d.n);
+    let h = '<div class="bs-zone' + (unlocked ? '' : ' locked') + '" data-district="' + d.n + '" style="left:' + (z.x - z.w / 2) + 'px;top:' + (z.y - z.h / 2) + 'px;width:' + z.w + 'px;height:' + z.h + 'px' + (bg ? ';background-image:url(' + bg + ')' : '') + '"></div>';
+    return h;
+  }
+  function zoneTopHtml(d) {
+    const z = ZONES[d.n] || { x: 700, y: 700, tag: { x: 700, y: 500 } };
+    const unlocked = base.districtUnlocked(d.n); const ready = base.districtReady(d.n); const name = d.worldName || d.name || ('第' + d.n + '地区');
+    let h = '<div class="bs-ztag" style="left:' + z.tag.x + 'px;top:' + z.tag.y + 'px">' + TL.icon(unlocked ? (ZONE_ICON[d.n] || 'home') : 'lock') + esc(name) + '</div>';
     if (!unlocked) {
-      h += '<div class="bs-dhead"><span>' + esc(name) + (d.worldName ? ' <span class="bs-world">' + esc(d.worldName) + '</span>' : '') + '</span><span class="tiny">' + TL.icon('lock') + ' ' + esc(condText(d)) + '</span></div>';
-      h += '<div class="bs-board locked">' + TL.icon('lock', 'icon-lg') + '<div class="small bold">解放条件: ' + esc(condText(d)) + '</div>' + (ready ? '<button class="btn btn-gold btn-sm" data-act="unlock-district" data-district="' + d.n + '">解放（無料）</button>' : '<div class="tiny">区画: ' + Object.keys(d.slots).map(function (id) { return nameOf(id); }).join('・') + '</div>') + '</div></section>';
+      h += '<div class="bs-zlock" style="left:' + z.x + 'px;top:' + z.y + 'px">' + TL.icon('lock', 'icon-lg') + '<b>' + esc(name) + '</b><div class="tiny">解放条件: ' + esc(condText(d)) + '</div>' +
+        (ready ? '<button class="btn btn-gold btn-sm" data-act="unlock-district" data-district="' + d.n + '">解放（無料）</button>' : '<div class="tiny">区画: ' + Object.keys(d.slots).map(function (id) { return nameOf(id); }).join('・') + '</div>') + '</div>';
       return h;
     }
     const order = (D().buildingList || Object.keys(d.slots)).filter(function (id) { return d.slots[id]; });
-    const lay = LAYOUT[d.n] || { rows: 0, tiles: {} };
-    let overflow = 0; order.forEach(function (id) { overflow += lay.tiles[id] ? Math.max(0, d.slots[id] - 1) : d.slots[id]; });
-    const rows = lay.rows + Math.ceil(overflow / 4);
-    let built = 0, total = 0;
-    order.forEach(function (id) { total += d.slots[id]; built += Math.min(d.slots[id], buildingsIn(id, d.n).length); });
-    h += '<div class="bs-dhead"><span>' + esc(name) + (d.worldName ? ' <span class="bs-world">' + esc(d.worldName) + '</span>' : '') + '</span><span class="tiny">建物 ' + built + '/' + total + '</span></div>';
-    const bg = districtArt(d.n);
-    curOy = Math.max(0, Math.floor((rg.h - 26 - 14 - rows * PITCH) / 2));
-    h += '<div class="bs-board' + (bg ? ' has-art' : '') + '"' + (bg ? ' style="background-image:url(' + bg + ')"' : '') + '>';
-    let auto = 0;
+    const spots = SPOTS[d.n] || {}; let extra = 0;
     order.forEach(function (id) {
       const def = defOf(id); if (!def) return; const have = buildingsIn(id, d.n).sort(byIndex);
       for (let i = 0; i < d.slots[id]; i++) {
-        let pos = (i === 0 && lay.tiles[id]) ? lay.tiles[id] : null;
-        if (!pos) { pos = { c: auto % 4, r: lay.rows + Math.floor(auto / 4) }; auto++; }
-        h += have[i] ? tileHtml(have[i], def, pos, !!pos.big, d) : slotHtml(id, def, pos, d);
+        let p = (i === 0 && spots[id]) ? spots[id] : null;
+        if (!p) { p = [z.x - 165 + (extra % 4) * 110, z.y + z.h / 2 - 90 + Math.floor(extra / 4) * 120]; extra++; }
+        h += have[i] ? tileHtml(have[i], def, p[0], p[1], id === 'castle', d) : slotHtml(id, def, p[0], p[1], d);
       }
     });
-    h += '</div></section>';
     return h;
   }
   function townHtml() {
-    const z = view.z; const ground = TL.scene ? TL.scene('map') : null;
-    let h = '<div class="bs-view' + (z < 1 ? ' overview' : '') + '"><div class="bs-size" style="width:' + Math.round(MAP.w * z) + 'px;height:' + Math.round(MAP.h * z) + 'px">' +
-      '<div class="bs-map" style="width:' + MAP.w + 'px;height:' + MAP.h + 'px;transform:scale(' + z + ')' + (ground ? ';background-image:url(' + ground + ')' : '') + '">';
-    MAP.roads.forEach(function (r) { h += '<div class="bs-road' + (r.v ? ' v' : '') + '" style="left:' + r.l + 'px;top:' + r.t + 'px;width:' + r.w + 'px;height:' + r.h + 'px"></div>'; });
-    h += (D().districts || []).map(districtHtml).join('') + '</div></div></div>';
-    h += '<button class="bs-zoom" data-act="zoom" aria-label="' + (z < 1 ? '拡大' : '全体を見る') + '">' + TL.icon(z < 1 ? 'plus' : 'world') + (z < 1 ? '拡大' : '全体') + '</button>';
-    if (!view.hinted) h += '<div class="bs-hint">スワイプで城下町を見渡せます</div>';
+    const ds = D().districts || []; const tree = TL.scene ? TL.scene('tile_forest') : null;
+    let h = '<div class="bs-view"><div class="bs-map" style="width:' + MAP.w + 'px;height:' + MAP.h + 'px">';
+    h += ds.map(zoneHtml).join('');
+    if (tree) TREES.forEach(function (t) { h += '<div class="bs-tree" style="left:' + (t[0] - 43) + 'px;top:' + (t[1] - 43) + 'px;background-image:url(' + tree + ')"></div>'; });
+    h += '<svg class="bs-roads" width="' + MAP.w + '" height="' + MAP.h + '" viewBox="0 0 ' + MAP.w + ' ' + MAP.h + '" aria-hidden="true">' +
+      ROADS.map(function (p) { return '<path d="' + p + '" fill="none" stroke="var(--bs-path-2)" stroke-width="36" stroke-linecap="round"/><path d="' + p + '" fill="none" stroke="var(--bs-path)" stroke-width="26" stroke-linecap="round"/>'; }).join('') + '</svg>';
+    h += ds.map(zoneTopHtml).join('') + '</div></div>';
+    h += '<button class="bs-zoom" data-act="zoom" aria-label="全体を見る">' + TL.icon('world') + '全体</button>';
+    if (!view.hinted) h += '<div class="bs-hint">指で動かす・2本指で拡大縮小</div>';
     return h;
   }
-  function dnavHtml() {
-    return '<div class="bs-dnav">' + (D().districts || []).map(function (d) {
-      const un = base.districtUnlocked(d.n);
-      return '<button data-goto-district="' + d.n + '" class="' + (un ? '' : 'locked') + '">' + TL.icon(un ? (DISTRICT_ICON[d.n] || 'home') : 'lock') + esc(d.worldName || d.name) + '</button>';
-    }).join('') + '</div>';
+  function minZoom() { return vp ? Math.max(0.3, Math.min(vp.clientWidth / MAP.w, vp.clientHeight / MAP.h)) : 0.3; }
+  function clampView() {
+    if (!vp) return;
+    const vw = vp.clientWidth, vh = vp.clientHeight, mw = MAP.w * view.z, mh = MAP.h * view.z;
+    view.x = mw <= vw ? (vw - mw) / 2 : clamp(view.x, vw - mw, 0);
+    view.y = mh <= vh ? (vh - mh) / 2 : clamp(view.y, vh - mh, 0);
   }
-  function fitZoom(v) { return Math.max(0.2, Math.min(1, Math.min(v.clientWidth / MAP.w, v.clientHeight / MAP.h))); }
-  function regionCenter(n) { const rg = MAP.regions[n]; return rg ? { x: rg.l + rg.w / 2, y: rg.t + 26 + (rg.h - 26) / 2 } : { x: MAP.w / 2, y: MAP.h / 2 }; }
-  function castleCenter() { const rg = MAP.regions[1]; return { x: rg.l + 210, y: rg.t + 26 + 10 + 82 }; }
-  // 上の案内パネル（左列）の下に残る空きの中央へ寄せる
-  function topPad(v) { const root = v.parentNode; const l = root && root.querySelector('.bs-left'); return l ? Math.min(v.clientHeight * 0.5, l.offsetHeight + 12) : 0; }
-  function targetTop(v, y) { const p = topPad(v); return y * view.z - (p + (v.clientHeight - p) / 2); }
-  function scrollToMap(v, pt, smooth) {
-    const left = pt.x * view.z - v.clientWidth / 2, top = targetTop(v, pt.y);
-    if (smooth) { try { v.scrollTo({ left: left, top: top, behavior: 'smooth' }); return; } catch (e) { /* fall through */ } }
-    v.scrollLeft = left; v.scrollTop = top;
+  function applyView() {
+    if (!mapEl || !vp) return; clampView();
+    mapEl.style.transform = 'translate(' + view.x.toFixed(1) + 'px,' + view.y.toFixed(1) + 'px) scale(' + view.z.toFixed(3) + ')';
+    vp.classList.toggle('overview', view.z < 0.6);
+    const zb = vp.parentNode && vp.parentNode.querySelector('.bs-zoom'); if (zb) { const ov = view.z < 0.6; zb.innerHTML = TL.icon(ov ? 'plus' : 'world') + (ov ? '拡大' : '全体'); zb.setAttribute('aria-label', ov ? '拡大' : '全体を見る'); }
   }
-  function setZoom(v, z, centerPt) {
-    const c = centerPt || { x: (v.scrollLeft + v.clientWidth / 2) / view.z, y: (v.scrollTop + v.clientHeight / 2) / view.z };
-    view.z = z; view.x = c.x * z - v.clientWidth / 2; view.y = z < 1 ? c.y * z - v.clientHeight / 2 : targetTop(v, c.y);
-    rerenderHome();
+  function stopAnim() { if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; } }
+  function animateView(tx, ty, tz, ms) {
+    stopAnim(); if (!vp) return;
+    const sx = view.x, sy = view.y, sz = view.z, t0 = performance.now(); ms = ms || 320;
+    const step = function (t) { const k = Math.min(1, (t - t0) / ms); const e = 1 - Math.pow(1 - k, 3); view.z = sz + (tz - sz) * e; view.x = sx + (tx - sx) * e; view.y = sy + (ty - sy) * e; applyView(); animRaf = k < 1 ? requestAnimationFrame(step) : null; };
+    animRaf = requestAnimationFrame(step);
   }
-  // スクロール位置の復元・マウスのドラッグ移動・全体表示からのタップ拡大
+  // 地図座標 pt を画面の (fx, fy) 比率の位置に置く（fy .55 = 上の案内の下あたり）
+  function focusMap(pt, z, smooth) {
+    if (!vp) return; z = z || view.z;
+    const tx = vp.clientWidth * 0.5 - pt.x * z, ty = vp.clientHeight * 0.55 - pt.y * z;
+    if (smooth) { animateView(tx, ty, z); return; }
+    view.z = z; view.x = tx; view.y = ty; applyView();
+  }
+  function zoomAt(z, sx, sy) {   // 画面上の点 (sx, sy) を動かさずに倍率を変える
+    z = clamp(z, minZoom(), 1.6);
+    const mx = (sx - view.x) / view.z, my = (sy - view.y) / view.z;
+    view.z = z; view.x = sx - mx * z; view.y = sy - my * z; applyView();
+  }
+  function toggleOverview() {
+    if (!vp) return; const c = { x: SPOTS[1].castle[0], y: SPOTS[1].castle[1] };
+    if (view.z < 0.6) focusMap(c, 1, true);
+    else { const z = minZoom(); animateView((vp.clientWidth - MAP.w * z) / 2, (vp.clientHeight - MAP.h * z) / 2, z); }
+  }
   function setupView(root) {
-    const v = root.querySelector('.bs-view'); if (!v) return;
-    if (view.x == null) { const c = castleCenter(); view.x = c.x * view.z - v.clientWidth / 2; view.y = targetTop(v, c.y); }
-    v.scrollLeft = view.x; v.scrollTop = view.y; view.hinted = true;
-    v.addEventListener('scroll', function () { view.x = v.scrollLeft; view.y = v.scrollTop; }, { passive: true });
-    let drag = null, moved = false;
-    v.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse' || e.button !== 0) return; drag = { x: e.clientX, y: e.clientY, l: v.scrollLeft, t: v.scrollTop }; moved = false; });
-    v.addEventListener('pointermove', function (e) { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (!moved && Math.abs(dx) + Math.abs(dy) > 6) { moved = true; v.classList.add('dragging'); } if (moved) { v.scrollLeft = drag.l - dx; v.scrollTop = drag.t - dy; } });
-    const end = function () { if (!drag) return; drag = null; setTimeout(function () { v.classList.remove('dragging'); moved = false; }, 0); };
-    v.addEventListener('pointerup', end); v.addEventListener('pointercancel', end); v.addEventListener('pointerleave', end);
-    v.addEventListener('click', function (e) {
+    vp = root.querySelector('.bs-view'); mapEl = root.querySelector('.bs-map'); if (!vp || !mapEl) return;
+    if (!view.init) { view.init = true; focusMap({ x: SPOTS[1].castle[0], y: SPOTS[1].castle[1] }, 1, false); } else applyView();
+    view.hinted = true;
+    // scrollIntoView（チュートリアル・自動テスト）が overflow:hidden の枠をスクロールしてしまうので、平行移動に読み替える
+    vp.addEventListener('scroll', function () { if (vp.scrollLeft || vp.scrollTop) { view.x -= vp.scrollLeft; view.y -= vp.scrollTop; vp.scrollLeft = 0; vp.scrollTop = 0; applyView(); } });
+    const ptrs = new Map(); let start = null, last = null, moved = false, vel = { x: 0, y: 0 }, pinch = null, inertiaRaf = null;
+    const dist = function (a, b) { return Math.hypot(a.x - b.x, a.y - b.y); };
+    const stopInertia = function () { if (inertiaRaf) { cancelAnimationFrame(inertiaRaf); inertiaRaf = null; } };
+    vp.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      stopInertia(); stopAnim();
+      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (ptrs.size === 1) { start = { x: e.clientX, y: e.clientY }; last = { x: e.clientX, y: e.clientY, t: performance.now() }; moved = false; vel = { x: 0, y: 0 }; pinch = null; }
+      else if (ptrs.size === 2) { const a = Array.from(ptrs.values()); pinch = { d: dist(a[0], a[1]), z: view.z }; moved = true; }
+    });
+    vp.addEventListener('pointermove', function (e) {
+      const p = ptrs.get(e.pointerId); if (!p) return; p.x = e.clientX; p.y = e.clientY;
+      const r = vp.getBoundingClientRect();
+      if (ptrs.size >= 2 && pinch) {
+        const a = Array.from(ptrs.values()); const d = dist(a[0], a[1]); if (d < 1) return;
+        const mid = { x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2 };
+        zoomAt(pinch.z * d / pinch.d, mid.x - r.left, mid.y - r.top); return;
+      }
+      if (ptrs.size === 1 && last) {
+        if (!moved && Math.abs(e.clientX - start.x) + Math.abs(e.clientY - start.y) > 8) { moved = true; vp.classList.add('dragging'); }
+        if (moved) {
+          const dx = e.clientX - last.x, dy = e.clientY - last.y; const t = performance.now(); const dt = Math.max(1, t - last.t);
+          view.x += dx; view.y += dy; applyView(); vel = { x: dx / dt, y: dy / dt, t: t };
+        }
+        last = { x: e.clientX, y: e.clientY, t: performance.now() };
+      }
+    });
+    const up = function (e) {
+      if (!ptrs.has(e.pointerId)) return; ptrs.delete(e.pointerId);
+      if (ptrs.size < 2) pinch = null;
+      if (ptrs.size === 0) {
+        if (moved && vel.t && performance.now() - vel.t < 90) {   // 慣性
+          let vx = vel.x * 16, vy = vel.y * 16;
+          const step = function () { view.x += vx; view.y += vy; vx *= 0.93; vy *= 0.93; applyView(); inertiaRaf = (Math.abs(vx) + Math.abs(vy) > 0.4) ? requestAnimationFrame(step) : null; };
+          if (Math.abs(vx) + Math.abs(vy) > 1) inertiaRaf = requestAnimationFrame(step);
+        }
+        vp.classList.remove('dragging'); last = null;
+        setTimeout(function () { moved = false; }, 0);
+      }
+    };
+    vp.addEventListener('pointerup', up); vp.addEventListener('pointercancel', up); window.addEventListener('pointerup', up);
+    vp.addEventListener('click', function (e) {
       if (moved) { e.stopPropagation(); e.preventDefault(); return; }
-      if (view.z < 1 && !e.target.closest('button')) {   // 全体表示: タップした場所へ拡大
-        const r = v.getBoundingClientRect(); const pt = { x: (e.clientX - r.left + v.scrollLeft) / view.z, y: (e.clientY - r.top + v.scrollTop) / view.z };
-        e.stopPropagation(); setZoom(v, 1, pt);
+      if (view.z < 0.6 && !e.target.closest('button')) {   // 全景: タップした場所へ拡大
+        const r = vp.getBoundingClientRect(); const mx = (e.clientX - r.left - view.x) / view.z, my = (e.clientY - r.top - view.y) / view.z;
+        e.stopPropagation(); focusMap({ x: mx, y: my }, 1, true);
       }
     }, true);
+    vp.addEventListener('wheel', function (e) { e.preventDefault(); const r = vp.getBoundingClientRect(); zoomAt(view.z * (e.deltaY < 0 ? 1.1 : 0.9), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   }
-  base.gotoDistrict = function (n, smooth) {
-    const v = document.querySelector('.bs-view'); if (!v) return;
-    if (view.z < 1) { setZoom(v, 1, regionCenter(n)); return; }
-    scrollToMap(v, regionCenter(n), smooth !== false);
+  // 地図の中の要素を画面の見やすい位置へ（チュートリアルの吹き出し・建物へのジャンプ）。地図の外の要素なら false
+  base.revealEl = function (el) {
+    if (!vp || !mapEl || !el || !mapEl.contains(el)) return false;
+    const x = el.offsetLeft + el.offsetWidth / 2, y = el.offsetTop + el.offsetHeight / 2;
+    focusMap({ x: x, y: y }, Math.max(view.z, 1), true);
+    return true;
   };
+  base.gotoDistrict = function (n) { const z = ZONES[n]; if (z) focusMap({ x: z.x, y: z.y }, 1, true); };
   function currentStageKey() { const s = S(); if (TL.campaign && TL.campaign.currentKey) { try { return TL.campaign.currentKey(); } catch (e) { /* fall through */ } } return (s && s.stages && s.stages.current) || '1-1'; }
   function deployWarn(key) {
     try { const St = D().stages; if (!St || !St.recommendedPower || !TL.calc || !TL.calc.squadPower) return false; return TL.calc.squadPower('squad1') < St.recommendedPower(key); } catch (e) { return false; }
@@ -6920,9 +7004,8 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
       if (a === 'spring') { base.claimSpring(act.getAttribute('data-uid')); return; }
       if (a === 'unlock-district') { base.unlockDistrict(Number(act.getAttribute('data-district'))); return; }
       if (a === 'quest-go') { questGo(); return; }
-      if (a === 'zoom') { const v = document.querySelector('.bs-view'); if (v) setZoom(v, view.z < 1 ? 1 : fitZoom(v)); return; }
+      if (a === 'zoom') { toggleOverview(); return; }
     }
-    const gd = e.target.closest('[data-goto-district]'); if (gd) { base.gotoDistrict(Number(gd.getAttribute('data-goto-district'))); return; }
     const ev = e.target.closest('[data-event]'); if (ev) { openEvent(ev.getAttribute('data-event')); return; }
     const im = e.target.closest('[data-intel]'); if (im) { openIntel(im.getAttribute('data-intel')); return; }
     if (e.target.closest('[data-panel="missions"]')) { go('missions'); return; }
@@ -6937,7 +7020,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     render(el) {
       const s = S(); if (!s) { el.innerHTML = '<div class="empty">読み込み中…</div>'; return; }
       base.process(now());
-      el.innerHTML = '<div class="bs-home' + (view.z < 1 ? ' overview' : '') + '">' + townHtml() + topHtml() + bottomHtml() + '</div>';
+      el.innerHTML = '<div class="bs-home">' + townHtml() + topHtml() + bottomHtml() + '</div>';
       const root = el.querySelector('.bs-home'); if (root) { root.addEventListener('click', onHomeClick); setupView(root); }
       lastDate = TL.calc.dateKey(now());
     },
@@ -15404,7 +15487,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
           let holeHtml = '', handHtml = '', bubbleTop;
           if (target) {
             // centre a screen target so the sticky bottom bar (出撃/ミッション) or the HUD cannot cover the hole
-            if (scroll) target.scrollIntoView({ block: screenEl.contains(target) ? 'center' : 'nearest', inline: 'nearest' });
+            if (scroll && !(TL.base && TL.base.revealEl && TL.base.revealEl(target))) target.scrollIntoView({ block: screenEl.contains(target) ? 'center' : 'nearest', inline: 'nearest' });
             const r = target.getBoundingClientRect();
             lastRect = rectKey(target);
             const top = r.top - appR.top, left = r.left - appR.left;
