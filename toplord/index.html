@@ -11,7 +11,6 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>トップロード 再現版</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -144,6 +143,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   -webkit-overflow-scrolling: touch;
 }
 #screen.full { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+#screen.fill { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
 #nav {
   flex: 0 0 auto;
   position: relative;
@@ -324,6 +324,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 .tut-bubble { position: absolute; left: 16px; right: 16px; background: var(--surface); color: var(--fg); border: 2px solid var(--gold); border-radius: 12px; padding: 10px 12px; box-shadow: var(--shadow-lg); font-weight: 500; }
 .tut-bubble .who { font-family: var(--font-display); color: var(--gold-dark); font-size: 13px; margin-bottom: 2px; }
 .tut-hand { position: absolute; width: 36px; height: 36px; color: var(--gold-2); animation: tap 1s ease-in-out infinite; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .5)); }
+.tut-bubble { padding-right: 36px; }
+.tut-min { position: absolute; top: 5px; right: 5px; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg-muted); display: grid; place-items: center; padding: 0; cursor: pointer; }
+.tut-min .icon { width: 14px; height: 14px; }
+.tut-chip { position: absolute; left: 50%; bottom: 136px; transform: translateX(-50%); display: none; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 999px; border: 2px solid var(--gold); background: var(--panel); color: var(--gold-2); font-weight: 700; font-size: 12px; box-shadow: var(--shadow-lg); pointer-events: auto; cursor: pointer; white-space: nowrap; animation: tut-chip 1.6s ease-in-out infinite; }
+.tut-chip .icon { width: 16px; height: 16px; }
+#tutorial.collapsed .tut-bubble, #tutorial.collapsed .tut-mask { display: none; }
+#tutorial.collapsed .tut-chip { display: inline-flex; }
+#tutorial.collapsed .tut-hole { box-shadow: none; }
+@keyframes tut-chip { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -4px); } }
 
 /* ---------- reward popup ---------- */
 .reward-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
@@ -5971,8 +5980,6 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
 :root { --bs-grass: #7cb663; --bs-grass-2: #66a150; --bs-path: #dcc08a; --bs-path-2: #cbad70; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bs-grass: #3e6b3a; --bs-grass-2: #345b31; --bs-path: #8c784c; --bs-path-2: #76663f; } }
 :root[data-theme="dark"] { --bs-grass: #3e6b3a; --bs-grass-2: #345b31; --bs-path: #8c784c; --bs-path-2: #76663f; }
-.bs-home { position: relative; display: flex; flex-direction: column; gap: 10px; }
-.bs-top { display: flex; gap: 8px; align-items: stretch; }
 .bs-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
 .bs-events { display: flex; flex-direction: column; gap: 4px; width: 62px; flex: 0 0 auto; }
 .bs-ev { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 4px 2px 3px; border-radius: 10px; border: 1px solid var(--gold); background: linear-gradient(180deg, var(--panel), var(--panel-2)); color: var(--panel-fg); font-size: 9px; font-weight: 700; line-height: 1.15; box-shadow: var(--shadow); }
@@ -5987,7 +5994,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
 .bs-intel { display: flex; flex-wrap: wrap; gap: 6px; }
 .bs-intel-m { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px 3px 4px; border-radius: 999px; background: var(--surface); border: 1px solid var(--warn); color: var(--fg); font-size: 11px; font-weight: 700; box-shadow: var(--shadow); }
 .bs-intel-m i { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--warn); color: #fff; font-style: normal; font-size: 11px; }
-.bs-status { padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+.bs-status { padding: 5px 10px; display: flex; flex-direction: column; gap: 2px; }
 .bs-status .icon { width: 14px; height: 14px; }
 .bs-town { display: flex; flex-direction: column; gap: 10px; }
 .bs-district { border: 2px solid var(--gold); border-radius: 12px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
@@ -6035,7 +6042,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
 .bs-tile.flash .bs-shape { outline: 3px solid var(--gold-2); animation: pulse 1s 3; }
 @keyframes bs-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 @keyframes bs-bob2 { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -4px); } }
-.bs-bottom { position: sticky; bottom: 0; z-index: 4; display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; margin-top: 2px; }
+.bs-bottom { display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; }
 .bs-bottom > * { pointer-events: auto; }
 .bs-hero { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; background: linear-gradient(180deg, var(--panel), var(--panel-2)); color: var(--panel-fg); border: 2px solid var(--gold); border-radius: 14px; padding: 4px 8px; font-size: 10px; font-weight: 700; box-shadow: var(--shadow); }
 .bs-hero .avatar { width: 40px; height: 40px; }
@@ -6065,6 +6072,43 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
 .bs-unlock-list li { display: flex; align-items: center; gap: 6px; font-weight: 700; }
 .bs-unlock-list .icon { color: var(--ok); }
 .bs-workers { margin-top: 8px; }
+
+/* ---- 城下町 = 一枚の広い地図（スワイプ/ドラッグで見渡す・ピンチの代わりに「全体」ボタン） ---- */
+.bs-home { position: relative; flex: 1; min-height: 0; display: block; overflow: hidden; background: var(--bs-grass-2); }
+.bs-view { position: absolute; inset: 0; overflow: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; cursor: grab; overscroll-behavior: contain; }
+.bs-view::-webkit-scrollbar { display: none; }
+.bs-view.dragging { cursor: grabbing; }
+.bs-view.dragging .bs-tile { pointer-events: none; }
+.bs-view.overview .bs-tile { pointer-events: none; }
+.bs-view.overview .bs-district { cursor: zoom-in; }
+.bs-view.overview { display: flex; align-items: center; justify-content: center; }
+.bs-home.overview .bs-top, .bs-home.overview .bs-hint { display: none; }
+.bs-size { position: relative; }
+.bs-map { position: absolute; left: 0; top: 0; transform-origin: 0 0; background-color: var(--bs-grass); background-size: 700px 700px; background-position: center; }
+.bs-map::before { content: ''; position: absolute; inset: 0; background: rgba(255,250,235,.12); pointer-events: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bs-map::before { background: rgba(0,0,0,.32); } }
+:root[data-theme="dark"] .bs-map::before { background: rgba(0,0,0,.32); }
+.bs-road { position: absolute; background: linear-gradient(180deg, var(--bs-path-2), var(--bs-path) 50%, var(--bs-path-2)); border-radius: 22px; box-shadow: inset 0 0 0 3px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.18); opacity: .92; }
+.bs-road.v { background: linear-gradient(90deg, var(--bs-path-2), var(--bs-path) 50%, var(--bs-path-2)); }
+.bs-district { position: absolute; }
+.bs-dhead { height: 26px; box-sizing: border-box; }
+.bs-district > .bs-board { position: absolute; left: 0; right: 0; top: 26px; bottom: 0; }
+.bs-district > .bs-board.locked { height: auto; }
+.bs-top { position: absolute; left: 8px; right: 8px; top: 8px; z-index: 3; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+.bs-top > * { pointer-events: auto; }
+.bs-top-row { display: flex; gap: 8px; align-items: stretch; }
+.bs-dnav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding: 1px 0 2px; }
+.bs-dnav::-webkit-scrollbar { display: none; }
+.bs-dnav button { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 3px; border-radius: 999px; border: 1px solid var(--gold); background: var(--panel); color: var(--panel-fg); font: inherit; font-size: 11px; font-weight: 700; padding: 3px 9px; white-space: nowrap; box-shadow: var(--shadow); cursor: pointer; }
+.bs-dnav button .icon { width: 12px; height: 12px; color: var(--gold-2); }
+.bs-dnav button.locked { opacity: .62; }
+.bs-dnav button.on { background: var(--gold); color: #3a2a08; }
+.bs-dnav button.on .icon { color: #3a2a08; }
+.bs-zoom { position: absolute; right: 8px; bottom: 96px; z-index: 3; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--gold); background: var(--panel); color: var(--gold-2); display: grid; place-items: center; box-shadow: var(--shadow-lg); cursor: pointer; font: inherit; font-size: 10px; font-weight: 700; line-height: 1; padding: 0; }
+.bs-zoom .icon { width: 18px; height: 18px; }
+.bs-hint { position: absolute; left: 50%; bottom: 100px; transform: translateX(-50%); z-index: 3; font-size: 11px; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); border-radius: 999px; padding: 4px 12px; pointer-events: none; white-space: nowrap; animation: bs-hint 6s ease forwards; }
+@keyframes bs-hint { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+.bs-bottom { position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 4; margin: 0; }
 `);
 
   const base = TL.base = {};
@@ -6080,6 +6124,13 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     3: { rows: 1, tiles: { farm: { c: 0, r: 0 }, sawmill: { c: 1, r: 0 }, house: { c: 2, r: 0 }, griffin_nest: { c: 3, r: 0 } } },
     4: { rows: 2, tiles: { farm: { c: 0, r: 0 }, sawmill: { c: 1, r: 0 }, house: { c: 2, r: 0 }, barracks: { c: 3, r: 0 }, ward_tent: { c: 1.5, r: 1 } } },
   };
+  // 城下町の地図（px）: 中央に第1地区（王冠の国）、上に第4地区（星降る高地）、左右に第2（精霊の森）・第3（組合の街）。道で結ぶ
+  const MAP = { w: 1420, h: 980,
+    regions: { 1: { l: 500, t: 380, w: 420, h: 566 }, 2: { l: 10, t: 330, w: 420, h: 300 }, 3: { l: 990, t: 330, w: 420, h: 300 }, 4: { l: 500, t: 20, w: 420, h: 300 } },
+    roads: [{ l: 430, t: 592, w: 560, h: 44 }, { l: 690, t: 318, w: 40, h: 64, v: true }] };
+  const DISTRICT_ICON = { 1: 'castle', 2: 'bow', 3: 'ship', 4: 'star' };
+  // 表示状態（再描画をまたいで保つ）: z = 倍率（1 または全体表示）、x/y = スクロール位置、hinted = 操作ヒント表示済み
+  const view = { z: 1, x: null, y: null, hinted: false };
   const CASTLE_FEATURES = ['drill_ground', 'ward_tent', 'barracks', 'research', 'alliance', 'world', 'arena', 'glory', 'griffin', 'squad2', 'squad3'];
   const EVENTS = [
     { key: 'growth7', name: '躍進の道', icon: 'star', screen: 'growth7' },
@@ -6717,16 +6768,15 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     const s = S(); const q = s.buildQueue; const un = uncollected();
     let h = '<div class="card bs-status"><div class="row"><span class="small muted">建設枠</span><b class="num">' + q.length + '/' + base.slots() + '</b></div>';
     if (q.length) q.forEach(function (it) { const b = byUid(it.uid); h += '<div class="row small"><span class="inline">' + TL.icon('build') + esc(b ? nameOf(b.id) : it.uid) + ' → Lv' + it.toLevel + '</span><b class="timer num" data-timer-uid="' + esc(it.uid) + '">' + fmt.time((it.endAt - now()) / 1000) + '</b></div>'; });
-    else h += '<div class="small muted">建設枠は空いています</div>';
-    h += '<div class="row" style="margin-top:4px"><span class="small muted">未回収</span><span class="inline gap small num" data-uncollected>' + uncollectedHtml(un) + '</span><button class="btn btn-sm btn-ok" data-act="collect-all">全て回収</button></div></div>';
+    h += '<div class="row"><span class="small muted">未回収</span><span class="inline gap small num" data-uncollected>' + uncollectedHtml(un) + '</span><button class="btn btn-sm btn-ok" data-act="collect-all">全て回収</button></div></div>';
     return h;
   }
   function uncollectedHtml(un) { return ['wood', 'food', 'gold'].map(function (r) { return '<span class="inline">' + TL.icon(r) + fmt.num(un[r]) + '</span>'; }).join(''); }
   function topHtml() {
-    let h = '<div class="bs-top"><div class="bs-left">' + questHtml();
+    let h = '<div class="bs-top"><div class="bs-top-row"><div class="bs-left">' + questHtml();
     const markers = intelMarkers();
     if (markers.length) h += '<div class="bs-intel">' + markers.map(function (m) { return '<button class="bs-intel-m" data-intel="' + esc(m.id) + '"><i>!</i>' + esc(m.label || m.kind || '諜報') + '</button>'; }).join('') + '</div>';
-    h += statusHtml() + '</div><div class="bs-events">' + EVENTS.map(evHtml).join('') + '</div></div>';
+    h += statusHtml() + dnavHtml() + '</div><div class="bs-events">' + EVENTS.map(evHtml).join('') + '</div></div></div>';
     return h;
   }
 
@@ -6737,7 +6787,8 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     return (world && A[id + '@' + world]) || A[id] || null;
   }
   function districtArt(n) { const A = TL.townArt && TL.townArt.districts; return A ? (A[String(n)] || null) : null; }
-  function posStyle(pos, big) { return 'left:calc(' + ((2 * pos.c + 1) * 12.5) + '% - ' + ((big ? BIG_W : TILE_W) / 2) + 'px);top:' + (10 + pos.r * PITCH) + 'px;'; }
+  let curOy = 0;   // 区画の縦の余白（地区の枠に対してタイル列を上下中央に置く）
+  function posStyle(pos, big) { return 'left:calc(' + ((2 * pos.c + 1) * 12.5) + '% - ' + ((big ? BIG_W : TILE_W) / 2) + 'px);top:' + (10 + curOy + pos.r * PITCH) + 'px;'; }
   function byIndex(a, b) { return (parseInt(a.uid.split('#')[1], 10) || 0) - (parseInt(b.uid.split('#')[1], 10) || 0); }
   function tileHtml(b, def, pos, big, d) {
     const q = queueOf(b.uid); const res = prodRes(b); const stored = Math.floor(b.stored || 0);
@@ -6760,7 +6811,8 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
   }
   function districtHtml(d) {
     const unlocked = base.districtUnlocked(d.n); const ready = base.districtReady(d.n); const name = d.name || ('第' + d.n + '地区');
-    let h = '<section class="bs-district" data-district="' + d.n + '">';
+    const rg = MAP.regions[d.n] || { l: 10, t: 10 + (d.n - 1) * 320, w: 420, h: 300 };
+    let h = '<section class="bs-district' + (unlocked ? '' : ' is-locked') + '" data-district="' + d.n + '" style="left:' + rg.l + 'px;top:' + rg.t + 'px;width:' + rg.w + 'px;height:' + rg.h + 'px">';
     if (!unlocked) {
       h += '<div class="bs-dhead"><span>' + esc(name) + (d.worldName ? ' <span class="bs-world">' + esc(d.worldName) + '</span>' : '') + '</span><span class="tiny">' + TL.icon('lock') + ' ' + esc(condText(d)) + '</span></div>';
       h += '<div class="bs-board locked">' + TL.icon('lock', 'icon-lg') + '<div class="small bold">解放条件: ' + esc(condText(d)) + '</div>' + (ready ? '<button class="btn btn-gold btn-sm" data-act="unlock-district" data-district="' + d.n + '">解放（無料）</button>' : '<div class="tiny">区画: ' + Object.keys(d.slots).map(function (id) { return nameOf(id); }).join('・') + '</div>') + '</div></section>';
@@ -6774,7 +6826,8 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     order.forEach(function (id) { total += d.slots[id]; built += Math.min(d.slots[id], buildingsIn(id, d.n).length); });
     h += '<div class="bs-dhead"><span>' + esc(name) + (d.worldName ? ' <span class="bs-world">' + esc(d.worldName) + '</span>' : '') + '</span><span class="tiny">建物 ' + built + '/' + total + '</span></div>';
     const bg = districtArt(d.n);
-    h += '<div class="bs-board' + (bg ? ' has-art' : '') + '" style="height:' + (14 + rows * PITCH) + 'px' + (bg ? ';background-image:url(' + bg + ')' : '') + '">';
+    curOy = Math.max(0, Math.floor((rg.h - 26 - 14 - rows * PITCH) / 2));
+    h += '<div class="bs-board' + (bg ? ' has-art' : '') + '"' + (bg ? ' style="background-image:url(' + bg + ')"' : '') + '>';
     let auto = 0;
     order.forEach(function (id) {
       const def = defOf(id); if (!def) return; const have = buildingsIn(id, d.n).sort(byIndex);
@@ -6787,7 +6840,62 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     h += '</div></section>';
     return h;
   }
-  function townHtml() { return '<div class="bs-town">' + (D().districts || []).map(districtHtml).join('') + '</div>'; }
+  function townHtml() {
+    const z = view.z; const ground = TL.scene ? TL.scene('map') : null;
+    let h = '<div class="bs-view' + (z < 1 ? ' overview' : '') + '"><div class="bs-size" style="width:' + Math.round(MAP.w * z) + 'px;height:' + Math.round(MAP.h * z) + 'px">' +
+      '<div class="bs-map" style="width:' + MAP.w + 'px;height:' + MAP.h + 'px;transform:scale(' + z + ')' + (ground ? ';background-image:url(' + ground + ')' : '') + '">';
+    MAP.roads.forEach(function (r) { h += '<div class="bs-road' + (r.v ? ' v' : '') + '" style="left:' + r.l + 'px;top:' + r.t + 'px;width:' + r.w + 'px;height:' + r.h + 'px"></div>'; });
+    h += (D().districts || []).map(districtHtml).join('') + '</div></div></div>';
+    h += '<button class="bs-zoom" data-act="zoom" aria-label="' + (z < 1 ? '拡大' : '全体を見る') + '">' + TL.icon(z < 1 ? 'plus' : 'world') + (z < 1 ? '拡大' : '全体') + '</button>';
+    if (!view.hinted) h += '<div class="bs-hint">スワイプで城下町を見渡せます</div>';
+    return h;
+  }
+  function dnavHtml() {
+    return '<div class="bs-dnav">' + (D().districts || []).map(function (d) {
+      const un = base.districtUnlocked(d.n);
+      return '<button data-goto-district="' + d.n + '" class="' + (un ? '' : 'locked') + '">' + TL.icon(un ? (DISTRICT_ICON[d.n] || 'home') : 'lock') + esc(d.worldName || d.name) + '</button>';
+    }).join('') + '</div>';
+  }
+  function fitZoom(v) { return Math.max(0.2, Math.min(1, Math.min(v.clientWidth / MAP.w, v.clientHeight / MAP.h))); }
+  function regionCenter(n) { const rg = MAP.regions[n]; return rg ? { x: rg.l + rg.w / 2, y: rg.t + 26 + (rg.h - 26) / 2 } : { x: MAP.w / 2, y: MAP.h / 2 }; }
+  function castleCenter() { const rg = MAP.regions[1]; return { x: rg.l + 210, y: rg.t + 26 + 10 + 82 }; }
+  // 上の案内パネル（左列）の下に残る空きの中央へ寄せる
+  function topPad(v) { const root = v.parentNode; const l = root && root.querySelector('.bs-left'); return l ? Math.min(v.clientHeight * 0.5, l.offsetHeight + 12) : 0; }
+  function targetTop(v, y) { const p = topPad(v); return y * view.z - (p + (v.clientHeight - p) / 2); }
+  function scrollToMap(v, pt, smooth) {
+    const left = pt.x * view.z - v.clientWidth / 2, top = targetTop(v, pt.y);
+    if (smooth) { try { v.scrollTo({ left: left, top: top, behavior: 'smooth' }); return; } catch (e) { /* fall through */ } }
+    v.scrollLeft = left; v.scrollTop = top;
+  }
+  function setZoom(v, z, centerPt) {
+    const c = centerPt || { x: (v.scrollLeft + v.clientWidth / 2) / view.z, y: (v.scrollTop + v.clientHeight / 2) / view.z };
+    view.z = z; view.x = c.x * z - v.clientWidth / 2; view.y = z < 1 ? c.y * z - v.clientHeight / 2 : targetTop(v, c.y);
+    rerenderHome();
+  }
+  // スクロール位置の復元・マウスのドラッグ移動・全体表示からのタップ拡大
+  function setupView(root) {
+    const v = root.querySelector('.bs-view'); if (!v) return;
+    if (view.x == null) { const c = castleCenter(); view.x = c.x * view.z - v.clientWidth / 2; view.y = targetTop(v, c.y); }
+    v.scrollLeft = view.x; v.scrollTop = view.y; view.hinted = true;
+    v.addEventListener('scroll', function () { view.x = v.scrollLeft; view.y = v.scrollTop; }, { passive: true });
+    let drag = null, moved = false;
+    v.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse' || e.button !== 0) return; drag = { x: e.clientX, y: e.clientY, l: v.scrollLeft, t: v.scrollTop }; moved = false; });
+    v.addEventListener('pointermove', function (e) { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (!moved && Math.abs(dx) + Math.abs(dy) > 6) { moved = true; v.classList.add('dragging'); } if (moved) { v.scrollLeft = drag.l - dx; v.scrollTop = drag.t - dy; } });
+    const end = function () { if (!drag) return; drag = null; setTimeout(function () { v.classList.remove('dragging'); moved = false; }, 0); };
+    v.addEventListener('pointerup', end); v.addEventListener('pointercancel', end); v.addEventListener('pointerleave', end);
+    v.addEventListener('click', function (e) {
+      if (moved) { e.stopPropagation(); e.preventDefault(); return; }
+      if (view.z < 1 && !e.target.closest('button')) {   // 全体表示: タップした場所へ拡大
+        const r = v.getBoundingClientRect(); const pt = { x: (e.clientX - r.left + v.scrollLeft) / view.z, y: (e.clientY - r.top + v.scrollTop) / view.z };
+        e.stopPropagation(); setZoom(v, 1, pt);
+      }
+    }, true);
+  }
+  base.gotoDistrict = function (n, smooth) {
+    const v = document.querySelector('.bs-view'); if (!v) return;
+    if (view.z < 1) { setZoom(v, 1, regionCenter(n)); return; }
+    scrollToMap(v, regionCenter(n), smooth !== false);
+  };
   function currentStageKey() { const s = S(); if (TL.campaign && TL.campaign.currentKey) { try { return TL.campaign.currentKey(); } catch (e) { /* fall through */ } } return (s && s.stages && s.stages.current) || '1-1'; }
   function deployWarn(key) {
     try { const St = D().stages; if (!St || !St.recommendedPower || !TL.calc || !TL.calc.squadPower) return false; return TL.calc.squadPower('squad1') < St.recommendedPower(key); } catch (e) { return false; }
@@ -6812,7 +6920,9 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
       if (a === 'spring') { base.claimSpring(act.getAttribute('data-uid')); return; }
       if (a === 'unlock-district') { base.unlockDistrict(Number(act.getAttribute('data-district'))); return; }
       if (a === 'quest-go') { questGo(); return; }
+      if (a === 'zoom') { const v = document.querySelector('.bs-view'); if (v) setZoom(v, view.z < 1 ? 1 : fitZoom(v)); return; }
     }
+    const gd = e.target.closest('[data-goto-district]'); if (gd) { base.gotoDistrict(Number(gd.getAttribute('data-goto-district'))); return; }
     const ev = e.target.closest('[data-event]'); if (ev) { openEvent(ev.getAttribute('data-event')); return; }
     const im = e.target.closest('[data-intel]'); if (im) { openIntel(im.getAttribute('data-intel')); return; }
     if (e.target.closest('[data-panel="missions"]')) { go('missions'); return; }
@@ -6823,12 +6933,12 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
   }
   let tickCount = 0, lastDate = '';
   TL.screens.home = {
-    title: '城下町', nav: true,
+    title: '城下町', nav: true, fill: true,
     render(el) {
       const s = S(); if (!s) { el.innerHTML = '<div class="empty">読み込み中…</div>'; return; }
       base.process(now());
-      el.innerHTML = '<div class="bs-home">' + topHtml() + townHtml() + bottomHtml() + '</div>';
-      const root = el.querySelector('.bs-home'); if (root) root.addEventListener('click', onHomeClick);
+      el.innerHTML = '<div class="bs-home' + (view.z < 1 ? ' overview' : '') + '">' + townHtml() + topHtml() + bottomHtml() + '</div>';
+      const root = el.querySelector('.bs-home'); if (root) { root.addEventListener('click', onHomeClick); setupView(root); }
       lastDate = TL.calc.dateKey(now());
     },
     onShow(params) {
@@ -13376,6 +13486,11 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
 .mt-title.has-art .mt-logo-text, .mt-title.has-art .mt-logo-en { text-shadow: 0 2px 8px rgba(0,0,0,.9), 0 0 24px rgba(0,0,0,.8); }
 .mt-story-scene.has-art { background-size: cover; background-position: center; }
 .mt-story-scene.has-art .mt-flag { background: rgba(10,14,28,.55); border-radius: 50%; padding: 6px; }
+.mt-story-heroes { display: flex; align-items: center; justify-content: center; gap: 22px; background: radial-gradient(ellipse at 50% 110%, rgba(240,215,138,.35), transparent 60%), linear-gradient(180deg, #16243f, #2d4776); }
+.mt-sh { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mt-sh-p .avatar, .mt-sh-p img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
+.mt-sh-p .avatar { border: 2px solid var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,.5); }
+.mt-sh-w { font-size: 11px; font-weight: 700; color: var(--gold-2); background: rgba(0,0,0,.45); border-radius: 999px; padding: 1px 9px; }
 
 .mt-title { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px 16px; overflow: hidden; cursor: pointer; user-select: none;
   background: radial-gradient(ellipse at 50% 28%, rgba(240, 215, 138, .28), transparent 42%), radial-gradient(ellipse at 50% 100%, rgba(0, 0, 0, .45), transparent 60%), linear-gradient(180deg, var(--panel-2), var(--panel) 60%, #10192c); color: var(--panel-fg); }
@@ -14145,6 +14260,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
       (function () { const bl = TL.calc && TL.calc.blessingToday ? TL.calc.blessingToday() : null; const sps = TL.calc && TL.calc.spirits ? TL.calc.spirits() : []; return (bl ? kv('今日の加護', esc(bl.star) + ' <span class="tiny muted">' + esc(bl.desc) + '</span>') : '') + (sps.length ? kv('守り精霊', sps.filter(function (x) { return x.awake; }).length + '/' + sps.length + ' <span class="tiny muted">' + esc(sps.filter(function (x) { return x.awake; }).map(function (x) { return x.name; }).join('・') || '未覚醒') + '</span>') : ''); })() + '</div>' +
       '<div class="h-title mt" style="font-size:15px">年代記</div>' + chronicle.html(4);
     const m = TL.ui.modal({ title: 'プロフィール', html: html, buttons: [
+      { label: '物語', cls: 'btn-ghost', onClick: function () { meta.showStory(null); } },
       { label: '年代記', cls: 'btn-ghost', keepOpen: true, onClick: function () { chronicle.open(); return false; } },
       { label: 'VIP', cls: 'btn-ghost', onClick: function () { go('vip'); } },
       { label: '設定', cls: 'btn-ghost', onClick: function () { if (TL.ui.openSettings) TL.ui.openSettings(); } },
@@ -14208,14 +14324,22 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
   /* =====================================================================
      story intro (T01)
      ===================================================================== */
+  // プロローグ（GDD §13 継ぎ火の王冠 / §13.5 三つの世界）: すべて本作の独自設定。他作品の固有名詞・用語は使わない
   const STORY = [
-    { cls: 's1', icon: 'skull', title: '星の獣が落ち、旧王国は燃えた', body: '三百年前、天より落ちた「星の獣」が旧王国を焼いた。初代の領主は民を率いて獣を討ち、その心臓から零れた六つの星片を北の氷原に封じた。「火を絶やすな」——その誓いが、王冠とともに代々受け継がれる「継ぎ火」の始まりである。' },
-    { cls: 's2', icon: 'crown', title: 'キバ帝国、星片を掘り起こす', body: '北のキバ帝国は封じられた星片を掘り起こし、六人の執政がそれぞれ一片を帯びて南下した。星片は持ち主に力と長い命を与え、そして心を蝕む。王都近郊の城塞はまたたく間に落ち、民は村を追われた。' },
-    { cls: 's3', icon: 'castle', title: '若き領主よ、継ぎ火を絶やすな', body: '残された小さな城塞に、王冠を継いだばかりの若き領主が立つ。手元にあるのは僅かな兵と、忠臣ガレス、見習い弓兵トム。城を築き、兵を鍛え、英雄を集め、六執政から星片を取り戻せ。まずは鉄壁の執政に奪われた城塞からだ。' },
+    { cls: 's2', scene: 'map', icon: 'world', title: '三つの世界と、暦の樹', body: 'この大地には三つの世界が隣り合っている。騎士と城塞の〈王冠の国〉、精霊と狩人が暮らす〈精霊の森〉、冒険者組合が依頼板を掲げる〈組合の街〉。その境に立つ一本の大樹「暦の樹」が七つの守り星を日ごとに巡らせ、三つの世界を静かに見守っていた。' },
+    { cls: 's1', scene: 'story1', icon: 'skull', title: '星の獣と、継ぎ火の誓い', body: '三百年前、天から落ちた「星の獣」が大地を焼いた。三つの世界は初めて手を取り合い、獣を討った。砕けた心臓から零れた六つの星片は北の氷原に封じられ、見張りの火が灯された。「この火を絶やすな」——王冠とともに受け継がれる〈継ぎ火〉の誓いの始まりである。' },
+    { cls: 's2', scene: 'story2', icon: 'crown', title: '北から来た六人の執政', body: 'だが近年、北のキバ帝国が氷原を掘り返した。星片を帯びた六人の執政は力と長い命を得て南へ下り、国境の城塞は次々と落ちた。星片は持ち主の心を蝕む。森の守り星は曇り、組合の依頼板は救援の貼り紙で埋まった。' },
+    { cls: 's2', heroes: [{ id: 'gareth', world: '王冠の国' }, { id: 'robin', world: '精霊の森' }, { id: 'elsa', world: '組合の街' }], icon: 'heroes', title: '三つの世界の仲間たち', body: '王冠の国の盾士ガレス、精霊の森の狩人ロビンフッド、組合の街の術師エルザ——やがて三つの世界から英雄たちが継ぎ火のもとに集う。暦の加護、守り精霊、位階。三つの世界の力のすべてが、若き領主の味方になる。' },
+    { cls: 's3', scene: 'story3', icon: 'castle', title: '若き領主よ、火を継げ', body: '残された小さな城塞に、王冠を継いだばかりの若き領主が立つ。手元にあるのは僅かな兵と、忠臣ガレス、弓兵トム。城下町を築き、兵を鍛え、英雄を集め、六執政から星片を取り戻せ。まずは鉄壁の執政に奪われた城塞からだ。' },
   ];
   function sceneHtml(c) {
+    if (c.heroes) {
+      return '<div class="mt-story-scene mt-story-heroes">' + c.heroes.map(function (h) {
+        return '<div class="mt-sh"><div class="mt-sh-p">' + (TL.heroes && TL.heroes.portrait ? TL.heroes.portrait(h.id, 72) : '') + '</div><span class="mt-sh-w">' + esc(h.world) + '</span></div>';
+      }).join('') + '</div>';
+    }
     const castle = '<svg viewBox="0 0 400 70" preserveAspectRatio="none" aria-hidden="true"><path fill="currentColor" d="M0 70V40h30V30h10v10h20V20h8v-8h8v8h8V20h8v20h20V30h10v10h40V26h10v-8h8v8h10v14h40V34h12V22h8v-8h8v8h8v12h12v10h40V30h10v10h30v30z"/></svg>';
-    const bg = TL.scene ? TL.scene('story' + c.cls.slice(1)) : null;
+    const bg = TL.scene ? TL.scene(c.scene || ('story' + c.cls.slice(1))) : null;
     if (bg) return '<div class="mt-story-scene has-art ' + c.cls + '" style="background-image:url(' + bg + ')"><div class="mt-flag">' + TL.icon(c.icon) + '</div></div>';
     return '<div class="mt-story-scene ' + c.cls + '">' + (c.cls === 's3' ? '<div class="mt-sun"></div>' : '') + (c.cls === 's1' ? '<div class="mt-smoke" style="left:30%;top:20%"></div><div class="mt-smoke" style="left:60%;top:35%;animation-delay:1s"></div>' : '') + '<div class="mt-flag">' + TL.icon(c.icon) + '</div><div class="mt-castle">' + castle + '</div></div>';
   }
@@ -15005,7 +15129,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
       }
       current = { id: id, def: def, params: params || {} };
       screenEl.scrollTop = 0;
-      screenEl.className = def.full ? 'full' : '';
+      screenEl.className = def.full ? 'full' : (def.fill ? 'fill' : '');
       navEl.hidden = def.nav === false;
       hudEl.hidden = def.hud === false || def.full === true;
       ui.rerender();
@@ -15206,6 +15330,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
           ui.toast(TL.fmt.time(sec) + ' 進めました（建設・研究・生産が進みます）', 'ok');
         } else if (act === 'tut-resume') {
           m.close();
+          ui.tutorial.setCollapsed(false);
           const t = TL.state && TL.state.tutorial;
           if (t && t.done) ui.toast('チュートリアルは完了しています', 'info');
           else if (TL.meta.tutorial.resume && TL.meta.tutorial.resume()) ui.toast('チュートリアルを再開しました', 'ok');
@@ -15231,6 +15356,14 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
     /* ---------- tutorial ---------- */
     tutorial: {
       active: null,
+      // 案内の吹き出しをたたむ（×）: 以後の案内は小さなチップで出し、タップで開く。設定の「再開」で元に戻る
+      collapsed: (function () { try { return localStorage.getItem('toplord.guideMin') === '1'; } catch (e) { return false; } })(),
+      setCollapsed(v) {
+        ui.tutorial.collapsed = !!v;
+        try { localStorage.setItem('toplord.guideMin', v ? '1' : '0'); } catch (e) { /* ignore */ }
+        tutEl.classList.toggle('collapsed', !!v);
+        const t = ui.tutorial.active; if (t && t.i >= 0 && t.i < t.steps.length) ui.tutorial.place(t.steps[t.i]);
+      },
       run(steps, onDone) {
         ui.tutorial.stop();
         const t = ui.tutorial.active = { steps: steps, i: -1, onDone: onDone, timer: null, listener: null };
@@ -15281,9 +15414,11 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
           } else {
             bubbleTop = appR.height * 0.35;
           }
+          tutEl.classList.toggle('collapsed', !!ui.tutorial.collapsed);
           tutEl.innerHTML = (target ? '' : '<div class="tut-mask"></div>') + holeHtml +
-            '<div class="tut-bubble" style="top:' + bubbleTop + 'px">' + (step.who ? '<div class="who">' + TL.fmt.esc(step.who) + '</div>' : '') + '<div>' + (step.html || TL.fmt.esc(step.text || '')) + '</div>' +
-            (step.mode !== 'tap' ? '<div class="right mt"><button class="btn btn-sm btn-gold" data-tut="next">' + TL.fmt.esc(step.nextLabel || '次へ') + '</button></div>' : '<div class="tiny muted mt">光っている場所をタップ</div>') + '</div>' + handHtml;
+            '<div class="tut-bubble" style="top:' + bubbleTop + 'px"><button class="tut-min" data-tut="min" aria-label="案内をたたむ">' + TL.icon('close') + '</button>' + (step.who ? '<div class="who">' + TL.fmt.esc(step.who) + '</div>' : '') + '<div>' + (step.html || TL.fmt.esc(step.text || '')) + '</div>' +
+            (step.mode !== 'tap' ? '<div class="right mt"><button class="btn btn-sm btn-gold" data-tut="next">' + TL.fmt.esc(step.nextLabel || '次へ') + '</button></div>' : '<div class="tiny muted mt">光っている場所をタップ</div>') + '</div>' + handHtml +
+            '<button class="tut-chip" data-tut="open">' + TL.icon('quest') + (step.who ? TL.fmt.esc(step.who) + 'の案内' : '案内') + '</button>';
           (function clampBubble() {
             const bub = tutEl.querySelector('.tut-bubble'); if (!bub) return;
             const bh = bub.offsetHeight; const maxTop = appR.height - bh - 8;
@@ -15310,6 +15445,7 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
           } else {
             tutEl.style.pointerEvents = 'auto';
           }
+          if (ui.tutorial.collapsed) tutEl.style.pointerEvents = 'none';   // たたんだ案内は画面を邪魔しない（チップだけ押せる）
         };
         // keep the hole on the live node: screens re-render on bus events, popups open and close, the player scrolls
         const check = function () {
@@ -15350,6 +15486,8 @@ window.TL = window.TL || {}; window.TL.sceneArt = {"map":"data:image/webp;base64
   }
   bindScreen(screenEl);
   tutEl.addEventListener('click', function (e) {
+    if (e.target.closest('[data-tut="min"]')) { ui.tutorial.setCollapsed(true); return; }
+    if (e.target.closest('[data-tut="open"]')) { ui.tutorial.setCollapsed(false); return; }
     if (e.target.closest('[data-tut="next"]')) {
       const t = ui.tutorial.active; if (!t) return;
       const step = t.steps[t.i];
